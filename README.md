@@ -4,6 +4,7 @@
 > pell is WYSIWYG text editor for web
 
 Copyright (c) Jared Reich
+
 <a href="https://jaredreich.com/pell" target="_blank" rel="noopener noreferrer">https://jaredreich.com/pell</a>
 
 > This repository of pell is modified version for sphered.info
