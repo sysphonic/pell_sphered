@@ -1,17 +1,15 @@
 
 <img src="./images/logo.png" width="128" alt="Logo">
 
-> pell is WYSIWYG text editor for web
+> **pell(https://jaredreich.com/pell)** is WYSIWYG text editor for web
 
 Copyright (c) Jared Reich
-
-<a href="https://jaredreich.com/pell" target="_blank" rel="noopener noreferrer">https://jaredreich.com/pell</a>
 
 > This repository of pell is modified version for sphered.info
 
 [https://sphered.info/](https://sphered.info/)
 
-[![sphered.info](https://sphered.info/images/screen/pell_sphered.png "pell")]()
+[![sphered.info](https://sphered.info/images/screen/pell_sphered.png? "pell")]()
 
 ## Examples
 
