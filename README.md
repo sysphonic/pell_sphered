@@ -1,5 +1,5 @@
 
-<img src="./images/logo.png" width="128" alt="Logo">
+<img src="https://github.com/jaredreich/pell/raw/master/images/logo.png" width="128" alt="Logo">
 
 > **pell** (https://jaredreich.com/pell) is WYSIWYG text editor for web.
 
@@ -11,7 +11,7 @@ Copyright (c) Jared Reich
 
 [https://sphered.info/](https://sphered.info/)
 
-[![sphered.info](https://sphered.info/images/screen/pell_sphered.png "pell")]()
+[![sphered.info](https://sphered.info/images/screen/pell_sphered.png?? "pell")]()
 
 ## Examples
 
