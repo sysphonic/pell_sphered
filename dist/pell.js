@@ -26,7 +26,11 @@ var queryCommandValue = function queryCommandValue(command) {
 
 var exec = function exec(command) {
   var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-  return document.execCommand(command, false, value);
+  var ret = document.execCommand(command, false, value);
+  if (_pellContent) {
+    _pellContent.oninput({target:_pellContent});  // for Edge
+  }
+  return ret;
 };
 
 var defaultActions = {
@@ -130,16 +134,16 @@ var defaultActions = {
     icon: '&#128279;',
     title: 'Link',
     result: function result() {
-      var url = window.prompt('Enter the link URL');
-      if (url) exec('createLink', url);
+      var thetisBox = new ThetisBox;
+      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditLinkOkClicked("+thetisBox.id+");", "Enter the link URL", null);
     }
   },
   image: {
     icon: '&#128247;',
     title: 'Image',
     result: function result() {
-      var url = window.prompt('Enter the image URL');
-      if (url) exec('insertImage', url);
+      var thetisBox = new ThetisBox;
+      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditImageOkClicked("+thetisBox.id+");", "Enter the image URL", null);
     }
   }
 };
@@ -171,10 +175,14 @@ var init = function init(settings) {
   content.contentEditable = true;
   content.className = classes.content;
   content.oninput = function (_ref) {
+    if (_pellContent && (_pellContent.innerHTML == _pellLastHtml)) {
+      return;
+    }
     var firstChild = _ref.target.firstChild;
 
     if (firstChild && firstChild.nodeType === 3) exec(formatBlock, '<' + defaultParagraphSeparator + '>');else if (content.innerHTML === '<br>') content.innerHTML = '';
     settings.onChange(content.innerHTML);
+    _pellLastHtml = content.innerHTML;
   };
   content.onkeydown = function (event) {
     if (event.key === 'Enter' && queryCommandValue(formatBlock) === 'blockquote') {
@@ -192,6 +200,7 @@ var init = function init(settings) {
     button.title = action.title;
     button.setAttribute('type', 'button');
     button.onclick = function () {
+      setPellSelection(content);
       return action.result() && content.focus();
     };
 
@@ -222,3 +231,94 @@ exports['default'] = pell;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
+
+var _pellContent = null;
+var _pellSelection = {};
+var _pellLastHtml = null;
+
+var setPellSelection = function(content)
+{
+  if (arguments.length <= 0) {
+    _pellContent = null;
+    _pellSelection = {};
+  } else {
+    _pellContent = content;
+    _pellSelection = saveSelection(content);
+  }
+}
+
+var onPellEditLinkOkClicked = function(thetisBoxId)
+{
+  doPellAction("createLink", thetisBoxId);
+}
+
+var onPellEditImageOkClicked = function(thetisBoxId)
+{
+  doPellAction("insertImage", thetisBoxId);
+}
+
+var doPellAction = function(action, thetisBoxId)
+{
+  if (_pellContent) {
+    _pellContent.focus();
+    restoreSelection(_pellContent, _pellSelection);
+
+    var url = _z("thetisBoxEdit-"+thetisBoxId).value;
+    if (url) {
+      pell.exec(action, url);
+    }
+  }
+  ThetisBox.remove(thetisBoxId);
+}
+
+/*
+ * saveSelection, restoreSelection
+ *  from https://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376
+ *  #57 @Tim Down
+ */
+var saveSelection = function(containerEl)
+{
+  var range = window.getSelection().getRangeAt(0);
+  var preSelectionRange = range.cloneRange();
+  preSelectionRange.selectNodeContents(containerEl);
+  preSelectionRange.setEnd(range.startContainer, range.startOffset);
+  var start = preSelectionRange.toString().length;
+
+  return {
+    start: start,
+    end: start + range.toString().length
+  };
+};
+
+var restoreSelection = function(containerEl, savedSel)
+{
+  var charIndex = 0, range = document.createRange();
+  range.setStart(containerEl, 0);
+  range.collapse(true);
+  var nodeStack = [containerEl], node, foundStart = false, stop = false;
+
+  while (!stop && (node = nodeStack.pop())) {
+    if (node.nodeType == 3) {
+      var nextCharIndex = charIndex + node.length;
+      if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+        range.setStart(node, savedSel.start - charIndex);
+        foundStart = true;
+      }
+      if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+        range.setEnd(node, savedSel.end - charIndex);
+        stop = true;
+      }
+      charIndex = nextCharIndex;
+    } else {
+      var i = node.childNodes.length;
+      while (i--) {
+        nodeStack.push(node.childNodes[i]);
+      }
+    }
+  }
+
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+

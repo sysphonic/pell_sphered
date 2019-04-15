@@ -7,6 +7,7 @@
     <title>pell</title>
 
     <link rel="stylesheet" type="text/css" href="dist/pell.css">
+    <link rel="stylesheet" type="text/css" href="nessie/common/thetisbox.css">
 
     <style>
       body {
@@ -43,7 +44,24 @@
     </div>
 
     <script src="dist/pell.js"></script>
+    <script src="nessie/common/prototype.js"></script>
+    <script src="nessie/common/scriptaculous/effects.js"></script>
+    <script src="nessie/common/scriptaculous/dragdrop.js"></script>
+    <script src="nessie/common/common.js"></script>
+    <script src="nessie/common/translation.js"></script>
+    <script src="nessie/common/thetisbox.js"></script>
+    <script src="nessie/common/thetispalette.js"></script>
     <script>
+      function initThetisBox()
+      {
+        //ThetisBox.setTitle("<%= t('app.title') %>");
+        //ThetisBox.setOk("<%= t('btn.ok') %>");
+        //ThetisBox.setCancel("<%= t('btn.cancel') %>");
+        //ThetisBox.setClose("<%= t('btn.close') %>");
+        ThetisBox.setCloseImg("./nessie/img/thetisbox/close.png");
+      }
+      initThetisBox();
+
       var editor = window.pell.init({
         element: document.getElementById('editor'),
         defaultParagraphSeparator: 'p',
