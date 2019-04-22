@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-
+    <meta charset="UTF-8">
     <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
 
     <title>pell</title>
@@ -43,25 +43,27 @@
       </div>
     </div>
 
-    <script src="dist/pell.js"></script>
+    <script src="nessie/common/common.js"></script>
+    <script src="nessie/common/translation.js"></script>
+    <script src="dist/translation.js"></script>
     <script src="nessie/common/prototype.js"></script>
     <script src="nessie/common/scriptaculous/effects.js"></script>
     <script src="nessie/common/scriptaculous/dragdrop.js"></script>
-    <script src="nessie/common/common.js"></script>
-    <script src="nessie/common/translation.js"></script>
     <script src="nessie/common/thetisbox.js"></script>
     <script src="nessie/common/thetispalette.js"></script>
+    <script src="dist/pell.js"></script>
     <script>
       function initThetisBox()
       {
-        //ThetisBox.setTitle("<%= t('app.title') %>");
-        //ThetisBox.setOk("<%= t('btn.ok') %>");
-        //ThetisBox.setCancel("<%= t('btn.cancel') %>");
-        //ThetisBox.setClose("<%= t('btn.close') %>");
+        ThetisBox.setTitle(t("app.title"));
+        ThetisBox.setOk(t("btn.ok"));
+        ThetisBox.setCancel(t("btn.cancel"));
+        ThetisBox.setClose(t("btn.close"));
         ThetisBox.setCloseImg("./nessie/img/thetisbox/close.png");
       }
       initThetisBox();
-
+    </script>
+    <script>
       var editor = window.pell.init({
         element: document.getElementById('editor'),
         defaultParagraphSeparator: 'p',
@@ -69,7 +71,8 @@
           document.getElementById('text-output').innerHTML = html
           document.getElementById('html-output').textContent = html
         }
-      })
+      });
+      //tip(getNessieLocale());
     </script>
 
   </body>

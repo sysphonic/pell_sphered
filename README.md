@@ -13,6 +13,14 @@ Copyright (c) Jared Reich
 
 [![sphered.info](https://sphered.info/images/screen/pell_sphered.png??? "pell")]()
 
+## Feature
+
+* Localization (on Language)
+
+* Original modeless pop-up instead of modal prompt.
+
+* Specify Color for fore- and background.
+
 ## Examples
 
 ```html

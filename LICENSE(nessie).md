@@ -5,6 +5,7 @@ nessie/common
   /thetisbox.js
   /thetispalette.js
   /translation.js
+nessie/img/*
 
 ** Copyright (c) 2007-2019, MORITA Shintaro, Sysphonic **
 

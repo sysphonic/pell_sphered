@@ -809,6 +809,7 @@ Object.extend(Object.extend(ThetisBox.prototype, ThetisBox.Base.prototype), {
   // Show
   show: function(p_position, p_size, p_type, p_action, p_caption, p_def)
   {
+    this.title = (this.title || __thetisbox_title);
     if (!p_type) {
       ThetisBox.show(this.id);
       return;
@@ -1233,7 +1234,7 @@ Object.extend(Object.extend(ThetisBox.prototype, ThetisBox.Base.prototype), {
   offsetX: 0,
   offsetY: 0,
   additionalParams: null,
-  title: __thetisbox_title,
+  title: null,
   button_ok: null,
   button_cancel: null,
   button_close: null,

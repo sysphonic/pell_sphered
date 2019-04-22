@@ -142,8 +142,9 @@ var _locale = NESSIE_DEFAULT_LOCALE;
 
 function setNessieLocale(locale)
 {
-  tipFuncName("setNessieLocale(\""+locale+"\")");
-
+  if (typeof(tipFuncName) == "function") {
+    tipFuncName("setNessieLocale(\""+locale+"\")");
+  }
   _locale = locale;
 }
 

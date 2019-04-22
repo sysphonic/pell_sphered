@@ -681,7 +681,8 @@ ThetisPalette.prototype.show = function (x, y)
   }
 
   var paintarea = this.getPaintArea();
-  if (!this.is_set_blur
+  if (paintarea
+      && !this.is_set_blur
       && paintarea.type != "hidden"
       && paintarea.style.display != "none") {
     this.addEvent(paintarea, "blur", function(){ __this.set_blur_timer(); });
@@ -734,6 +735,9 @@ ThetisPalette.prototype.show = function (x, y)
 
 ThetisPalette._getPos = function (elem, flag)
 {
+  if (!elem) {
+    return {x: 0, y: 0};
+  }
   var change_display = false;
   try {
     if (elem.style.display == "none") {

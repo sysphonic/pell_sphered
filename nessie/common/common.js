@@ -24,6 +24,23 @@ function getUserAgentName()
   }
 }
 
+function getLang()
+{
+  var lang = null;
+  if (typeof(navigator.languages) != "undefined") {
+    lang = navigator.languages[0]; 
+  } else {
+    lang = navigator.language;
+  }
+  if (lang) {
+    m = lang.match(/[a-zA-Z]+/);
+    if (m && m[0]) {
+      lang = m[0];
+    }
+  }
+  return lang;
+}
+
 function getMetaContent(metaName)
 {
   var metas = document.getElementsByTagName("meta");
@@ -1441,16 +1458,74 @@ function getUtcExp(date)
   return exp;
 }
 
+/*
+ * getTextSelection, restoreTextSelection
+ *  from https://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376
+ *  #57 @Tim Down
+ */
+var getTextSelection = function(containerEl)
+{
+  var selection = window.getSelection();
+  if (!selection || (selection.rangeCount <= 0)) {
+    return null;
+  }
+  var range = selection.getRangeAt(0);
+  var preSelectionRange = range.cloneRange();
+  preSelectionRange.selectNodeContents(containerEl);
+  preSelectionRange.setEnd(range.startContainer, range.startOffset);
+  var start = preSelectionRange.toString().length;
+
+  return {
+    start: start,
+    end: start + range.toString().length
+  };
+};
+
+var restoreTextSelection = function(containerEl, savedSel)
+{
+  if (!savedSel) {
+    return false;
+  }
+  var charIndex = 0, range = document.createRange();
+  range.setStart(containerEl, 0);
+  range.collapse(true);
+  var nodeStack = [containerEl], node, foundStart = false, stop = false;
+
+  while (!stop && (node = nodeStack.pop())) {
+    if (node.nodeType == 3) {
+      var nextCharIndex = charIndex + node.length;
+      if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
+        range.setStart(node, savedSel.start - charIndex);
+        foundStart = true;
+      }
+      if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
+        range.setEnd(node, savedSel.end - charIndex);
+        stop = true;
+      }
+      charIndex = nextCharIndex;
+    } else {
+      var i = node.childNodes.length;
+      while (i--) {
+        nodeStack.push(node.childNodes[i]);
+      }
+    }
+  }
+
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  return true;
+}
+
 function splitTextBySelection(textarea)
 {
   var arr = [];
 
-  var val = textarea.value;
-  var posStart = textarea.selectionStart;
-  var posEnd = textarea.selectionEnd;
-  arr[0] = val.substring(0, posStart);
-  arr[1] = val.substring(posStart, posEnd);
-  arr[2] = val.substring(posEnd);
+  var val = (textarea.value || textarea.innerHTML);
+  var pos = getTextSelection(textarea);
+  arr[0] = val.substring(0, pos.start);
+  arr[1] = val.substring(pos.start, pos.end);
+  arr[2] = val.substring(pos.end);
 
   return arr;
 }

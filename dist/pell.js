@@ -36,7 +36,7 @@ var exec = function exec(command) {
 var defaultActions = {
   bold: {
     icon: '<b>B</b>',
-    title: 'Bold',
+    title: t("action.bold"),
     state: function state() {
       return queryCommandState('bold');
     },
@@ -46,7 +46,7 @@ var defaultActions = {
   },
   italic: {
     icon: '<i>I</i>',
-    title: 'Italic',
+    title: t("action.italic"),
     state: function state() {
       return queryCommandState('italic');
     },
@@ -56,7 +56,7 @@ var defaultActions = {
   },
   underline: {
     icon: '<u>U</u>',
-    title: 'Underline',
+    title: t("action.underline"),
     state: function state() {
       return queryCommandState('underline');
     },
@@ -66,7 +66,7 @@ var defaultActions = {
   },
   strikethrough: {
     icon: '<strike>S</strike>',
-    title: 'Strike-through',
+    title: t("action.strike_through"),
     state: function state() {
       return queryCommandState('strikeThrough');
     },
@@ -76,74 +76,88 @@ var defaultActions = {
   },
   heading1: {
     icon: '<b>H<sub>1</sub></b>',
-    title: 'Heading 1',
+    title: t("action.heading1"),
     result: function result() {
       return exec(formatBlock, '<h1>');
     }
   },
   heading2: {
     icon: '<b>H<sub>2</sub></b>',
-    title: 'Heading 2',
+    title: t("action.heading2"),
     result: function result() {
       return exec(formatBlock, '<h2>');
     }
   },
   paragraph: {
     icon: '&#182;',
-    title: 'Paragraph',
+    title: t("action.paragraph"),
     result: function result() {
       return exec(formatBlock, '<p>');
     }
   },
   quote: {
     icon: '&#8220; &#8221;',
-    title: 'Quote',
+    title: t("action.quote"),
     result: function result() {
       return exec(formatBlock, '<blockquote>');
     }
   },
   olist: {
     icon: '&#35;',
-    title: 'Ordered List',
+    title: t("action.ordered_list"),
     result: function result() {
       return exec('insertOrderedList');
     }
   },
   ulist: {
     icon: '&#8226;',
-    title: 'Unordered List',
+    title: t("action.unordered_list"),
     result: function result() {
       return exec('insertUnorderedList');
     }
   },
   code: {
     icon: '&lt;/&gt;',
-    title: 'Code',
+    title: t("action.code"),
     result: function result() {
       return exec(formatBlock, '<pre>');
     }
   },
   line: {
     icon: '&#8213;',
-    title: 'Horizontal Line',
+    title: t("action.horz_line"),
     result: function result() {
       return exec('insertHorizontalRule');
     }
   },
   link: {
     icon: '&#128279;',
-    title: 'Link',
+    title: t("action.link"),
     result: function result() {
       var thetisBox = new ThetisBox;
-      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditLinkOkClicked("+thetisBox.id+");", "Enter the link URL", null);
+      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditLinkOkClicked("+thetisBox.id+");", t("msg.enter_link_url"), null);
     }
   },
   image: {
     icon: '&#128247;',
-    title: 'Image',
+    title: t("action.image"),
     result: function result() {
       var thetisBox = new ThetisBox;
-      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditImageOkClicked("+thetisBox.id+");", "Enter the image URL", null);
+      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditImageOkClicked("+thetisBox.id+");", t("msg.enter_image_url"), null);
+    }
+  },
+  forecolor: {
+    icon: '<span id="pell_forecolor"><img src="./nessie/img/icons/text_color.png" /><input type="hidden" id="pell_forecolor_val" /></span>',
+    title: t("action.forecolor"),
+    result: function result() {
+      showPellPalette("pell_forecolor");
+    }
+  },
+  bgcolor: {
+    icon: '<span id="pell_bgcolor"><img src="./nessie/img/icons/bgcolor.png" /><input type="hidden" id="pell_bgcolor_val" /></span>',
+    title: t("action.bgcolor"),
+    result: function result() {
+      showPellPalette("pell_bgcolor");
     }
   }
 };
@@ -232,18 +246,23 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
 
+var NESSIE_RELATIVE_URL_ROOT = "../nessie";
+var REQ_PARAM_DEBUG = "";
+
 var _pellContent = null;
-var _pellSelection = {};
+var _pellSelection = null;
+var _pellSpanClass = null;
+var _pellSpanStyle = null;
 var _pellLastHtml = null;
 
 var setPellSelection = function(content)
 {
   if (arguments.length <= 0) {
     _pellContent = null;
-    _pellSelection = {};
+    _pellSelection = null;
   } else {
     _pellContent = content;
-    _pellSelection = saveSelection(content);
+    _pellSelection = getTextSelection(content);
   }
 }
 
@@ -261,7 +280,7 @@ var doPellAction = function(action, thetisBoxId)
 {
   if (_pellContent) {
     _pellContent.focus();
-    restoreSelection(_pellContent, _pellSelection);
+    restoreTextSelection(_pellContent, _pellSelection);
 
     var url = _z("thetisBoxEdit-"+thetisBoxId).value;
     if (url) {
@@ -271,54 +290,37 @@ var doPellAction = function(action, thetisBoxId)
   ThetisBox.remove(thetisBoxId);
 }
 
-/*
- * saveSelection, restoreSelection
- *  from https://stackoverflow.com/questions/13949059/persisting-the-changes-of-range-objects-after-selection-in-html/13950376
- *  #57 @Tim Down
- */
-var saveSelection = function(containerEl)
+var showPellPalette = function(tag)
 {
-  var range = window.getSelection().getRangeAt(0);
-  var preSelectionRange = range.cloneRange();
-  preSelectionRange.selectNodeContents(containerEl);
-  preSelectionRange.setEnd(range.startContainer, range.startOffset);
-  var start = preSelectionRange.toString().length;
+  ThetisPalette.setCaptions(
+      [t("btn.close"), t("btn.clear")]
+    );
+  ThetisPalette.setButtons(
+      {
+        clear: NESSIE_RELATIVE_URL_ROOT+"/img/icons/erase.png"
+      }
+    );
 
-  return {
-    start: start,
-    end: start + range.toString().length
-  };
-};
+  var thetisPalette = new ThetisPalette(tag, tag+"_val", null);
+  thetisPalette.show_clear = true;
 
-var restoreSelection = function(containerEl, savedSel)
+  thetisPalette.setFunc(
+              function() {
+                onPellPaletteSelected(tag, thetisPalette.getInputElem().value);
+              }
+            );
+  thetisPalette.show();
+}
+
+var onPellPaletteSelected = function(tag, colorVal)
 {
-  var charIndex = 0, range = document.createRange();
-  range.setStart(containerEl, 0);
-  range.collapse(true);
-  var nodeStack = [containerEl], node, foundStart = false, stop = false;
-
-  while (!stop && (node = nodeStack.pop())) {
-    if (node.nodeType == 3) {
-      var nextCharIndex = charIndex + node.length;
-      if (!foundStart && savedSel.start >= charIndex && savedSel.start <= nextCharIndex) {
-        range.setStart(node, savedSel.start - charIndex);
-        foundStart = true;
-      }
-      if (foundStart && savedSel.end >= charIndex && savedSel.end <= nextCharIndex) {
-        range.setEnd(node, savedSel.end - charIndex);
-        stop = true;
-      }
-      charIndex = nextCharIndex;
-    } else {
-      var i = node.childNodes.length;
-      while (i--) {
-        nodeStack.push(node.childNodes[i]);
-      }
-    }
+  switch (tag) {
+    case "pell_forecolor":
+      pell.exec("foreColor", colorVal);
+      break;
+    case "pell_bgcolor":
+      pell.exec("backColor", colorVal);
+      break;
   }
-
-  var sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
 }
 
