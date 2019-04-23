@@ -11,7 +11,7 @@ Copyright (c) Jared Reich
 
 > [https://sphered.info/](https://sphered.info/)
 
-[![sphered.info](https://sphered.info/images/screen/pell_sphered.png??? "pell")]()
+[![sphered.info](https://sphered.info/images/screen/pell_sphered.png "pell")]()
 
 ## Feature
 
@@ -23,22 +23,7 @@ Copyright (c) Jared Reich
 
 ## Examples
 
-```html
-<div id="editor" class="pell"></div>
-<div>
-  HTML output:
-  <div id="html-output" style="white-space:pre-wrap;"></div>
-</div>
-```
-
-```js
-
-See demo.html !
-
-// editor.content<HTMLElement>
-// To change the editor's content:
-editor.content.innerHTML = '<b><u><i>Initial content!</i></u></b>'
-```
+* See **demo.html** !
 
 ## License
 
