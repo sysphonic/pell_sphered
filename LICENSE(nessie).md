@@ -1,13 +1,18 @@
 # The MIT License (MIT)
 
-nessie/common
-  /common.js
-  /thetisbox.js
-  /thetispalette.js
-  /translation.js
-nessie/img/*
+> nessie/common
 
-** Copyright (c) 2007-2019, MORITA Shintaro, Sysphonic **
+>> /common.js
+
+>> /thetisbox.js
+
+>> /thetispalette.js
+
+>> /translation.js
+
+> nessie/img/*
+
+**Copyright (c) 2007-2019, MORITA Shintaro, Sysphonic**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
