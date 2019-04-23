@@ -1,79 +1,63 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+<head>
+  <meta charset="UTF-8">
+  <title>pell</title>
 
-    <title>pell</title>
-
-    <link rel="stylesheet" type="text/css" href="dist/pell.css">
-    <link rel="stylesheet" type="text/css" href="nessie/common/thetisbox.css">
-
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-
-      .content {
-        box-sizing: border-box;
-        margin: 0 auto;
-        max-width: 600px;
-        padding: 20px;
-      }
-
-      #html-output {
-        white-space: pre-wrap;
-      }
-    </style>
-
-  </head>
-  <body>
-
-    <div class="content">
-      <h1>pell</h1>
-      <div id="editor" class="pell"></div>
-      <div style="margin-top:20px;">
-        <h3>Text output:</h3>
-        <div id="text-output"></div>
-      </div>
-      <div style="margin-top:20px;">
-        <h3>HTML output:</h3>
-        <pre id="html-output"></pre>
-      </div>
+  <link rel="stylesheet" type="text/css" href="dist/pell.css">
+  <link rel="stylesheet" type="text/css" href="nessie/common/thetisbox.css">
+  <style>
+    body {margin:0; padding:0;}
+    .content {box-sizing:border-box; margin:0 auto; max-width:600px; padding:20px;}
+    #html-output {white-space:pre-wrap;}
+  </style>
+</head>
+<body>
+  <div class="content">
+    <h1>pell</h1>
+    <div id="editor" class="pell"></div>
+    <div style="margin-top:20px;">
+      <h3>Text output:</h3>
+      <div id="text-output"></div>
     </div>
+    <div style="margin-top:20px;">
+      <h3>HTML output:</h3>
+      <pre id="html-output"></pre>
+    </div>
+  </div>
 
-    <script src="nessie/common/common.js"></script>
-    <script src="nessie/common/translation.js"></script>
-    <script src="dist/translation.js"></script>
-    <script src="nessie/common/prototype.js"></script>
-    <script src="nessie/common/scriptaculous/effects.js"></script>
-    <script src="nessie/common/scriptaculous/dragdrop.js"></script>
-    <script src="nessie/common/thetisbox.js"></script>
-    <script src="nessie/common/thetispalette.js"></script>
-    <script src="dist/pell.js"></script>
-    <script>
-      function initThetisBox()
-      {
-        ThetisBox.setTitle(t("app.title"));
-        ThetisBox.setOk(t("btn.ok"));
-        ThetisBox.setCancel(t("btn.cancel"));
-        ThetisBox.setClose(t("btn.close"));
-        ThetisBox.setCloseImg("./nessie/img/thetisbox/close.png");
+  <script src="nessie/common/common.js"></script>
+  <script src="nessie/common/translation.js"></script>
+  <script src="dist/translation.js"></script>
+  <script src="nessie/common/prototype.js"></script>
+  <script src="nessie/common/scriptaculous/effects.js"></script>
+  <script src="nessie/common/scriptaculous/dragdrop.js"></script>
+  <script src="nessie/common/thetisbox.js"></script>
+  <script src="nessie/common/thetispalette.js"></script>
+  <script src="dist/pell.js"></script>
+  <script>
+    function initThetisBox()
+    {
+      ThetisBox.setTitle(t("app.title"));
+      ThetisBox.setOk(t("btn.ok"));
+      ThetisBox.setCancel(t("btn.cancel"));
+      ThetisBox.setClose(t("btn.close"));
+      ThetisBox.setCloseImg("./nessie/img/thetisbox/close.png");
+    }
+    initThetisBox();
+  </script>
+  <script>
+    var editor = window.pell.init({
+      element: _z("editor"),
+      defaultParagraphSeparator: "p",
+      styleWithCSS: true,
+      onChange: function (html) {
+        _z("text-output").innerHTML = html
+        _z("html-output").textContent = html
       }
-      initThetisBox();
-    </script>
-    <script>
-      var editor = window.pell.init({
-        element: document.getElementById('editor'),
-        defaultParagraphSeparator: 'p',
-        onChange: function (html) {
-          document.getElementById('text-output').innerHTML = html
-          document.getElementById('html-output').textContent = html
-        }
-      });
-      //tip(getNessieLocale());
-    </script>
+    });
+    //tip(getNessieLocale());
+  </script>
 
-  </body>
+</body>
 </html>

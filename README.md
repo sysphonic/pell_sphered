@@ -7,7 +7,7 @@
 Copyright (c) Jared Reich
 ```
 
-> This repository of pell is modified version for sphered.info
+* This repository of pell is modified version for sphered.info
 
 > [https://sphered.info/](https://sphered.info/)
 
@@ -32,50 +32,8 @@ Copyright (c) Jared Reich
 ```
 
 ```js
-import { exec, init } from 'pell'
 
-const editor = init({
-  element: document.getElementById('editor'),
-  onChange: html => {
-    document.getElementById('html-output').textContent = html
-  },
-  defaultParagraphSeparator: 'p',
-  styleWithCSS: true,
-  actions: [
-    'bold',
-    'underline',
-    {
-      name: 'italic',
-      result: () => exec('italic')
-    },
-    {
-      name: 'backColor',
-      icon: '<div style="background-color:pink;">A</div>',
-      title: 'Highlight Color',
-      result: () => exec('backColor', 'pink')
-    },
-    {
-      name: 'image',
-      result: () => {
-        const url = window.prompt('Enter the image URL')
-        if (url) exec('insertImage', url)
-      }
-    },
-    {
-      name: 'link',
-      result: () => {
-        const url = window.prompt('Enter the link URL')
-        if (url) exec('createLink', url)
-      }
-    }
-  ],
-  classes: {
-    actionbar: 'pell-actionbar-custom-name',
-    button: 'pell-button-custom-name',
-    content: 'pell-content-custom-name',
-    selected: 'pell-button-selected-custom-name'
-  }
-})
+See demo.html !
 
 // editor.content<HTMLElement>
 // To change the editor's content:

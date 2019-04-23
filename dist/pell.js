@@ -1,3 +1,6 @@
+var NESSIE_RELATIVE_URL_ROOT = "./nessie";  // "/nessie" is recommended.
+var NESSIE_OFFSET_FROM_THIS_FILE = "../";   // Unless so, and if necessary
+
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -27,9 +30,8 @@ var queryCommandValue = function queryCommandValue(command) {
 var exec = function exec(command) {
   var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
   var ret = document.execCommand(command, false, value);
-  if (_pellContent) {
-    _pellContent.oninput({target:_pellContent});  // for Edge
-  }
+  var content = _settings.element.content;
+  content.oninput({target:content});  // for Edge
   return ret;
 };
 
@@ -135,7 +137,7 @@ var defaultActions = {
     title: t("action.link"),
     result: function result() {
       var thetisBox = new ThetisBox;
-      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditLinkOkClicked("+thetisBox.id+");", t("msg.enter_link_url"), null);
+      thetisBox.show("CENTER", "340,+158", "INPUT", "pell.act('createLink', "+thetisBox.id+");", t("msg.enter_link_url"), null);
     }
   },
   image: {
@@ -143,21 +145,21 @@ var defaultActions = {
     title: t("action.image"),
     result: function result() {
       var thetisBox = new ThetisBox;
-      thetisBox.show("CENTER", "340,+158", "INPUT", "onPellEditImageOkClicked("+thetisBox.id+");", t("msg.enter_image_url"), null);
+      thetisBox.show("CENTER", "340,+158", "INPUT", "pell.act('insertImage', "+thetisBox.id+");", t("msg.enter_image_url"), null);
     }
   },
   forecolor: {
-    icon: '<span id="pell_forecolor"><img src="./nessie/img/icons/text_color.png" /><input type="hidden" id="pell_forecolor_val" /></span>',
+    icon: '<span id="pell_forecolor"><img src="'+NESSIE_RELATIVE_URL_ROOT+'/img/icons/text_color.png" /><input type="hidden" id="pell_forecolor_val" /></span>',
     title: t("action.forecolor"),
     result: function result() {
-      showPellPalette("pell_forecolor");
+      showPalette("pell_forecolor");
     }
   },
   bgcolor: {
-    icon: '<span id="pell_bgcolor"><img src="./nessie/img/icons/bgcolor.png" /><input type="hidden" id="pell_bgcolor_val" /></span>',
+    icon: '<span id="pell_bgcolor"><img src="'+NESSIE_RELATIVE_URL_ROOT+'/img/icons/bgcolor.png" /><input type="hidden" id="pell_bgcolor_val" /></span>',
     title: t("action.bgcolor"),
     result: function result() {
-      showPellPalette("pell_bgcolor");
+      showPalette("pell_bgcolor");
     }
   }
 };
@@ -170,6 +172,8 @@ var defaultClasses = {
 };
 
 var init = function init(settings) {
+  _settings = settings;
+
   var actions = settings.actions ? settings.actions.map(function (action) {
     if (typeof action === 'string') return defaultActions[action];else if (defaultActions[action.name]) return _extends({}, defaultActions[action.name], action);
     return action;
@@ -189,7 +193,7 @@ var init = function init(settings) {
   content.contentEditable = true;
   content.className = classes.content;
   content.oninput = function (_ref) {
-    if (_pellContent && (_pellContent.innerHTML == _pellLastHtml)) {
+    if (content.innerHTML == _pellLastHtml) {
       return;
     }
     var firstChild = _ref.target.firstChild;
@@ -214,7 +218,7 @@ var init = function init(settings) {
     button.title = action.title;
     button.setAttribute('type', 'button');
     button.onclick = function () {
-      setPellSelection(content);
+      setSelection(content);
       return action.result() && content.focus();
     };
 
@@ -236,68 +240,14 @@ var init = function init(settings) {
   return settings.element;
 };
 
-var pell = { exec: exec, init: init };
-
-exports.exec = exec;
-exports.init = init;
-exports['default'] = pell;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-
-var NESSIE_RELATIVE_URL_ROOT = "../nessie";
-var REQ_PARAM_DEBUG = "";
-
-var _pellContent = null;
-var _pellSelection = null;
-var _pellSpanClass = null;
-var _pellSpanStyle = null;
-var _pellLastHtml = null;
-
-var setPellSelection = function(content)
-{
-  if (arguments.length <= 0) {
-    _pellContent = null;
-    _pellSelection = null;
-  } else {
-    _pellContent = content;
-    _pellSelection = getTextSelection(content);
-  }
-}
-
-var onPellEditLinkOkClicked = function(thetisBoxId)
-{
-  doPellAction("createLink", thetisBoxId);
-}
-
-var onPellEditImageOkClicked = function(thetisBoxId)
-{
-  doPellAction("insertImage", thetisBoxId);
-}
-
-var doPellAction = function(action, thetisBoxId)
-{
-  if (_pellContent) {
-    _pellContent.focus();
-    restoreTextSelection(_pellContent, _pellSelection);
-
-    var url = _z("thetisBoxEdit-"+thetisBoxId).value;
-    if (url) {
-      pell.exec(action, url);
-    }
-  }
-  ThetisBox.remove(thetisBoxId);
-}
-
-var showPellPalette = function(tag)
+var showPalette = function(tag)
 {
   ThetisPalette.setCaptions(
       [t("btn.close"), t("btn.clear")]
     );
   ThetisPalette.setButtons(
       {
-        clear: NESSIE_RELATIVE_URL_ROOT+"/img/icons/erase.png"
+        clear: NESSIE_OFFSET_FROM_THIS_FILE+NESSIE_RELATIVE_URL_ROOT+"/img/icons/erase.png"
       }
     );
 
@@ -305,22 +255,64 @@ var showPellPalette = function(tag)
   thetisPalette.show_clear = true;
 
   thetisPalette.setFunc(
-              function() {
-                onPellPaletteSelected(tag, thetisPalette.getInputElem().value);
-              }
-            );
+      function() {
+        onPaletteSelected(tag, thetisPalette.getInputElem().value);
+      }
+    );
   thetisPalette.show();
 }
 
-var onPellPaletteSelected = function(tag, colorVal)
+var onPaletteSelected = function(tag, colorVal)
 {
   switch (tag) {
     case "pell_forecolor":
-      pell.exec("foreColor", colorVal);
+      exec("foreColor", colorVal);
       break;
     case "pell_bgcolor":
-      pell.exec("backColor", colorVal);
+      exec("backColor", colorVal);
       break;
   }
 }
+
+var _settings = null;
+var _selection = null;
+var _pellLastHtml = null;
+
+var setSelection = function(content)
+{
+  if (arguments.length <= 0) {
+    _selection = null;
+  } else {
+    _selection = getTextSelection(content);
+  }
+}
+
+var act = function act(action, thetisBoxId)
+{
+  var content = _settings.element.content;
+  content.focus();
+  restoreTextSelection(content, _selection);
+
+  var url = _z("thetisBoxEdit-"+thetisBoxId).value;
+  if (url) {
+    exec(action, url);
+  }
+  ThetisBox.remove(thetisBoxId);
+}
+
+var pell = {
+  exec: exec,
+  init: init,
+  act: act
+};
+
+exports.exec = exec;
+exports.init = init;
+exports.act = act;
+exports['default'] = pell;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
 
