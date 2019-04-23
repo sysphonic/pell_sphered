@@ -11,7 +11,7 @@ Copyright (c) Jared Reich
 
 > [https://sphered.info/](https://sphered.info/)
 
-[![sphered.info](https://sphered.info/images/screen/pell_sphered.png "pell")]()
+[![sphered.info](https://sphered.info/images/screen/pell_sphered.png???? "pell")]()
 
 ## Feature
 
@@ -23,7 +23,7 @@ Copyright (c) Jared Reich
 
 ## Examples
 
-* See **demo.html** !
+See **demo.html** !
 
 ## License
 
