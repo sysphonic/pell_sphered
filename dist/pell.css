@@ -24,3 +24,8 @@
 
 .pell-button-selected {
   background-color: #F0F0F0; }
+
+.pell-copyright {
+  float: right;
+  color: gray;
+  text-decoration: none;}
